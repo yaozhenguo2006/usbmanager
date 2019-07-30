@@ -1,0 +1,64 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(configure.in)
+AM_INIT_AUTOMAKE(usbmanager, 1.0)
+AM_CONFIG_HEADER(config.h)
+
+# required versions of other packages
+#m4_define([gtk_required_version], [2.2.0])
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.0.5)
+PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >= 1.0.0)
+AC_SUBST(GTK_FLAGS)
+AC_SUBST(LIBUSB_FLAGS)
+AC_SUBST(LIBUSB_LIBS)
+AC_SUBST(GTK_LIBS)
+
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/bin", [package local dir])
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/bin", [package local dir])
+fi
+
+dnl Set PACKAGE_DATA_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${ac_default_prefix}/share/${PACKAGE}", [package data dir])
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE}", [package data dir])
+fi
+
+
+changequote(,)dnl
+if test "x$GCC" = "xyes"; then
+  case " $CFLAGS " in
+  *[\ \	]-Wall[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wall" ;;
+  esac
+fi
+
+changequote([,])dnl
+
+AC_CONFIG_FILES([
+Makefile
+src/Makefile
+data/Makefile
+])
+AC_OUTPUT
+AC_MSG_RESULT([
+	usbmanager $VERSION
+	=============
+
+	prefix:                 ${prefix}
+	datadir:                ${prefix}/share/usbmanager
+
+	compiler:               ${CC}
+	cflags:                 ${CFLAGS}
+	ldflags:                ${LDFLAGS}
+])
+
